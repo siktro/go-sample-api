@@ -1,0 +1,34 @@
+### Get all books.
+
+GET http://localhost:8000/books
+
+### Get a book by id.
+
+GET http://localhost:8000/books/1
+
+### Add a book.
+
+POST http://localhost:8000/books
+Content-Type: application/json
+
+{
+    "title": "Title6",
+    "author": "Author6",
+    "year": 3214
+}
+
+### Update a book data.
+
+PUT http://localhost:8000/books
+Content-Type: application/json
+
+{
+    "id": 2,
+    "title": "New Fancy Title",
+    "author": "new author",
+    "year": 1234
+}
+
+### Delete a book by id.
+
+DELETE http://localhost:8000/books/2
