@@ -10,36 +10,32 @@ import (
 	"os"
 	"regexp"
 
+	"github.com/siktro/books-api/database"
+	"github.com/siktro/books-api/models"
+
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
-
-type Book struct {
-	ID     int     `json:"id,omitempty"`
-	Title  string  `json:"title"`
-	Author string  `json:"author"`
-	Year   *uint16 `json:"year"`
-}
 
 var db *sql.DB
 
 func main() {
 
-	// Reading env. variables.
-	const envFile = "./.env"
-	err := setEnvFromFile(envFile)
-	logFatal("reading .env file;", err)
+	// Setup env. variables.
+	err := setEnvFromFile("./.env")
+	logFatal("reading .env file", err)
 
 	// DB connetction.
-	ge := os.Getenv
-	connStr := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		ge("DB_IP"), ge("DB_PORT"), ge("DB_USER"), ge("DB_PASS"), ge("DB_NAME"),
-	)
-
-	db, err = sql.Open("postgres", connStr)
-	logFatal("unable to open a database:", err)
-	defer db.Close()
+	var closer func()
+	db, closer, err = database.Open(&database.Config{
+		Host:   os.Getenv("DB_HOST"),
+		Port:   os.Getenv("DB_PORT"),
+		User:   os.Getenv("DB_USER"),
+		Pass:   os.Getenv("DB_PASS"),
+		DbName: os.Getenv("DB_NAME"),
+	})
+	logFatal("opening database", err)
+	defer closer()
 
 	router := mux.NewRouter()
 
@@ -53,8 +49,8 @@ func main() {
 }
 
 func getBooks(w http.ResponseWriter, r *http.Request) {
-	var books []Book
-	book := Book{}
+	var books []models.Book
+	book := models.Book{}
 
 	rows, err := db.Query("SELECT * FROM books")
 	if err != nil {
@@ -78,7 +74,7 @@ func getBooks(w http.ResponseWriter, r *http.Request) {
 
 func getBook(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	book := Book{}
+	book := models.Book{}
 
 	row := db.QueryRow("SELECT * FROM books WHERE id = $1", params["id"])
 	err := row.Scan(&book.ID, &book.Title, &book.Author, &book.Year)
@@ -95,7 +91,7 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func addBook(w http.ResponseWriter, r *http.Request) {
-	var book Book
+	var book models.Book
 
 	err := json.NewDecoder(r.Body).Decode(&book)
 	if err != nil {
@@ -121,7 +117,7 @@ func addBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func updBook(w http.ResponseWriter, r *http.Request) {
-	var book Book
+	var book models.Book
 
 	err := json.NewDecoder(r.Body).Decode(&book)
 	if err != nil {
