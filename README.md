@@ -17,7 +17,7 @@ For practice and learning sake.
 1. `docker compose up -d` - run DB with GUI.
 2. `go run main.go`
 
-# TOOD
+# TODO
 
 - [ ] Start containers from server itself?
 - [ ] Add some middleware.
