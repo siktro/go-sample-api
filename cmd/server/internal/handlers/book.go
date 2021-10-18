@@ -4,6 +4,9 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+
+	"github.com/siktro/books-api/platform/book"
+	"github.com/siktro/books-api/platform/web"
 )
 
 type Book struct {
@@ -11,43 +14,13 @@ type Book struct {
 	Logger *log.Logger
 }
 
-func (b *Book) GetBooks(w http.ResponseWriter, r *http.Request) {
-	b.Logger.Println("hallo!")
-	// list, err := book.List(r.Context(), b.DB)
-	// if err != nil {
+func (b *Book) GetBooks(w http.ResponseWriter, r *http.Request) error {
+	list, err := book.List(r.Context(), b.DB)
+	if err != nil {
+		return err
+	}
 
-	// }
-
-	// return
-	// var books []book.Book
-	// book := models.Book{}
-
-	// rows, err := b.DB.Query("SELECT * FROM books")
-	// if err != nil {
-	// 	b.Logger.Printf("querying db: %v", err)
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	return
-	// }
-	// defer rows.Close()
-
-	// for rows.Next() {
-	// 	if err := rows.Scan(&book.ID, &book.Title, &book.Author, &book.Year); err != nil {
-	// 		if err == sql.ErrNoRows {
-	// 			break
-	// 		}
-
-	// 		b.Logger.Printf("scanning row: %v", err)
-	// 		w.WriteHeader(http.StatusInternalServerError)
-	// 		return
-	// 	}
-	// 	books = append(books, book)
-	// }
-
-	// if err = json.NewEncoder(w).Encode(books); err != nil {
-	// 	b.Logger.Printf("encoding json: %v", err)
-	// }
-	w.WriteHeader(http.StatusInternalServerError)
-	// json.NewEncoder(w).Encode("response!")
+	return web.Respond(w, list, http.StatusOK)
 }
 
 // func (b *Book) GetBook(w http.ResponseWriter, r *http.Request) {

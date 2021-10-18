@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,10 +8,8 @@ import (
 	"regexp"
 
 	"github.com/siktro/books-api/cmd/server/internal/handlers"
-	"github.com/siktro/books-api/web/database"
+	"github.com/siktro/books-api/platform/database"
 )
-
-var db *sql.DB
 
 func main() {
 	logger := log.New(os.Stdout, "[>] ", log.LstdFlags)
@@ -23,7 +20,7 @@ func main() {
 
 	// DB connetction.
 	var closer func()
-	db, closer, err = database.Open(&database.Config{
+	db, closer, err := database.Open(&database.Config{
 		Host:   os.Getenv("DB_HOST"),
 		Port:   os.Getenv("DB_PORT"),
 		User:   os.Getenv("DB_USER"),
