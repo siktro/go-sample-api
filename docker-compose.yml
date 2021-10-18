@@ -2,6 +2,7 @@ version: "3.9"
 services:
   db:
     container_name: pg_books
+    restart: no
     image: postgres
     restart: always
     environment:
@@ -12,6 +13,7 @@ services:
       - "5432:5432"
   pgadmin:
     container_name: pgadmin_books
+    restart: no
     image: dpage/pgadmin4
     restart: always
     environment:

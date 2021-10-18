@@ -8,8 +8,8 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/siktro/books-api/controllers"
-	"github.com/siktro/books-api/database"
+	"github.com/siktro/books-api/cmd/server/internal/handlers"
+	"github.com/siktro/books-api/web/database"
 )
 
 var db *sql.DB
@@ -33,7 +33,7 @@ func main() {
 	logFatal("opening database", err)
 	defer closer()
 
-	api := controllers.MakeAPI(db, logger)
+	api := handlers.MakeAPI(db, logger)
 	log.Fatal(http.ListenAndServe(":8000", api))
 }
 
